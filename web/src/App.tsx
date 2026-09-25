@@ -106,6 +106,17 @@ function Home({ h }: { h: Health | null }) {
         </div>
       </section>
 
+      <section className="card launch-film" aria-label={t('演示视频', 'Demo film')}>
+        <div className="launch-copy">
+          <h2>{t('演示视频', 'Demo film')}</h2>
+          <p className="dim">{t('3 分钟走完故障实验室、负载报告、工业时序、智能体设计、技能、评测与安全。全程站点真实录屏，诊断均为真实运行，配中文旁白与字幕。',
+            'Fault lab, workload report, plant telemetry, agent design, skills, benchmark and safety in under 3 minutes. Real screen recordings of this site with live diagnoses, English narration and subtitles.')}</p>
+        </div>
+        <video key={lang} controls playsInline preload="none" poster={`./media/poster-${lang}.jpg`}>
+          <source src={`./media/sparkdba-demo-${lang}.mp4`} type="video/mp4" />
+        </video>
+      </section>
+
       <section className="stats">
         <div className="card stat"><div className="k">{t('数据库根因 · 有技能', 'Database root cause · skills')}</div>
           <div className="v">{pct(s?.diagnosis_accuracy)}<small>{t('基线', 'baseline')} {pct(base?.diagnosis_accuracy)}</small></div></div>

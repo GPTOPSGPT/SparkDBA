@@ -84,7 +84,9 @@ Prerequisites: DGX OS / Ubuntu 24.04, PostgreSQL 16, Python 3.12, Node 24, a Pyt
    `http://<spark>:9000/?token=<SPARKDBA_TOKEN>`.
 8. **Plant module (optional)**: install TDengine, change its default root password, then
    `bash deploy/setup-tdengine.sh`, `bash deploy/restart.sh plant`, `bash deploy/restart.sh monitor`.
-9. **Harnesses (optional)**: `bash deploy/install-openclaw-skills.sh` (then `bash deploy/restart.sh openclaw`) and
+9. **Demo films (optional)**: put `sparkdba-demo-zh.mp4`, `sparkdba-demo-en.mp4`, `poster-zh.jpg`, `poster-en.jpg` in `$SPARKDBA_HOME/media`
+   (kept out of git; build them with `media/tools/build.mjs`). The home page plays the one matching the UI language.
+10. **Harnesses (optional)**: `bash deploy/install-openclaw-skills.sh` (then `bash deploy/restart.sh openclaw`) and
    `bash deploy/install-hermes.sh`.
 
 Mirrors that work from mainland China: PyPI `mirrors.aliyun.com`, npm `registry.npmmirror.com`, Node binaries

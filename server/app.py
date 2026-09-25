@@ -1,5 +1,6 @@
 """SparkDBA API + static UI. Everything runs on the DGX Spark (gx10)."""
 import json
+import os
 import queue
 import subprocess
 import threading
@@ -297,6 +298,20 @@ def journal():
 @app.get("/api/bench")
 def bench():
     return json.loads(BENCH.read_text()) if BENCH.exists() else {"status": "not run yet"}
+
+
+MEDIA = Path(os.environ.get("SPARKDBA_HOME", "/opt/sparkdba")) / "media"
+MEDIA_FILES = {"sparkdba-demo-zh.mp4", "sparkdba-demo-en.mp4", "poster-zh.jpg", "poster-en.jpg",
+               "sparkdba-demo-zh.vtt", "sparkdba-demo-en.vtt"}
+
+
+@app.get("/media/{name}")
+def media(name: str):
+    """Demo films and posters, kept out of git; whitelisted names only. FileResponse handles Range for seeking."""
+    f = MEDIA / name
+    if name not in MEDIA_FILES or not f.is_file():
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return FileResponse(f)
 
 
 @app.get("/{path:path}")
