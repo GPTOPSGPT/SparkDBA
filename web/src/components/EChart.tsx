@@ -9,7 +9,7 @@ echarts.use([BarChart, LineChart, GridComponent, LegendComponent, TooltipCompone
 
 const chartTheme = {
   textStyle: { color: '#8a8f98', fontFamily: 'inherit' },
-  legend: { textStyle: { color: '#e9eaee' } },
+  legend: { textStyle: { color: '#e9eaee' }, itemGap: 28, itemWidth: 14, itemHeight: 10 },
   tooltip: { backgroundColor: '#17181c', borderColor: '#2c2d33', textStyle: { color: '#e9eaee' } },
 }
 
@@ -23,6 +23,10 @@ export function EChart({ option, height = 240 }: { option: EChartsCoreOption; he
     ro.observe(el.current!)
     return () => { ro.disconnect(); c.dispose() }
   }, [])
-  useEffect(() => { chart.current?.setOption({ ...chartTheme, ...option }) }, [option])
+  useEffect(() => {
+    // Merge the legend instead of letting a chart's own `legend` replace the theme's spacing and colour.
+    const own = (option as { legend?: object }).legend
+    chart.current?.setOption({ ...chartTheme, ...option, ...(own ? { legend: { ...chartTheme.legend, ...own } } : {}) })
+  }, [option])
   return <div ref={el} style={{ height, width: '100%' }} />
 }
