@@ -22,7 +22,7 @@ S.setLang(EN ? "en" : "zh");
 const WORK = join(MEDIA, T("work", "work-en"));
 const SCRIPT = join(MEDIA, T("script.md", "script.en.md"));
 const OUT = join(MEDIA, T("sparkdba-demo.mp4", "sparkdba-demo-en.mp4"));
-const URL0 = process.env.SPARKDBA_URL || "http://127.0.0.1:9000/";   // set SPARKDBA_URL to the deployed site
+const URL0 = process.env.SPARKDBA_URL || "https://127.0.0.1:9000/";   // set SPARKDBA_URL to the deployed site
 const TOKEN = process.env.SPARKDBA_TOKEN || "";   // never written to the repo
 const VOICE = T("Tingting", "Samantha");
 const W = 1920, H = 1080, FPS = 30;
@@ -185,7 +185,7 @@ async function record(name, len) {
   const dir = join(WORK, "frames-" + name);
   await rm(dir, { recursive: true, force: true }); await mkdir(dir, { recursive: true });
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+  const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, ignoreHTTPSErrors: true });   // self-signed cert
   await ctx.addInitScript(CURSOR);
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);

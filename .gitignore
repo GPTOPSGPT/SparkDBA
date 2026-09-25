@@ -25,3 +25,8 @@ media/*.srt
 media/work-en/
 submission/
 *.zip
+
+# local secrets and editor files, never commit
+docs/token.txt
+*.swp
+docs/github.txt

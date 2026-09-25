@@ -10,9 +10,12 @@ import argparse
 import json
 import os
 import time
+import ssl
 import urllib.request
 
-URL = os.environ.get("SPARKDBA_URL", "http://127.0.0.1:9000").rstrip("/")
+URL = os.environ.get("SPARKDBA_URL", "https://127.0.0.1:9000").rstrip("/")
+# The app may use a self-signed certificate (deploy/make-tls.sh); SPARKDBA_CA=<cert.pem> verifies against it.
+CTX = ssl.create_default_context(cafile=os.environ["SPARKDBA_CA"]) if os.environ.get("SPARKDBA_CA") else ssl._create_unverified_context()
 TOKEN = os.environ.get("SPARKDBA_TOKEN", "")
 
 
@@ -20,7 +23,7 @@ def call(path, body=None, timeout=600):
     req = urllib.request.Request(f"{URL}/api/{path}", data=None if body is None else json.dumps(body).encode(),
                                  headers={"x-token": TOKEN, "content-type": "application/json"},
                                  method="GET" if body is None else "POST")
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with urllib.request.urlopen(req, timeout=timeout, context=CTX) as r:
         return json.loads(r.read())
 
 
@@ -29,7 +32,7 @@ def diagnose(**body):
     req = urllib.request.Request(f"{URL}/api/diagnose", data=json.dumps(body).encode(),
                                  headers={"x-token": TOKEN, "content-type": "application/json"}, method="POST")
     done = {}
-    with urllib.request.urlopen(req, timeout=900) as r:
+    with urllib.request.urlopen(req, timeout=900, context=CTX) as r:
         for raw in r:
             line = raw.decode().strip()
             if line.startswith("data: "):
