@@ -1,0 +1,27 @@
+.DS_Store
+.env
+.env.*
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+*.log
+data/
+models/
+*.safetensors
+*.gguf
+
+# organizer credentials and bulky source assets
+docs/gptops.txt
+docs/登录信息表.xlsx
+docs/*.pdf
+docs/*.docx
+docs/*.zip
+web/node_modules/
+web/dist/
+media/work/
+media/*.mp4
+media/*.srt
+media/work-en/
+submission/
+*.zip

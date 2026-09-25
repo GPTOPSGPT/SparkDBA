@@ -1,0 +1,107 @@
+[
+ {
+  "run": 1,
+  "step": "1a lab \u00b7 skills finds idle-in-tx",
+  "ok": true,
+  "detail": "idle_in_transaction \u00b7 6 steps \u00b7 37.5s",
+  "sec": 46.4
+ },
+ {
+  "run": 1,
+  "step": "1b lab \u00b7 baseline (for contrast)",
+  "ok": true,
+  "detail": "lock_contention \u00b7 12 steps \u00b7 17.1s",
+  "sec": 17.2
+ },
+ {
+  "run": 1,
+  "step": "2  workload \u00b7 replay after recovery",
+  "ok": true,
+  "detail": "idle_in_tx_samples=63 \u00b7 holder in history=True",
+  "sec": 60.6
+ },
+ {
+  "run": 1,
+  "step": "3  plant \u00b7 overheating on L2-oven",
+  "ok": true,
+  "detail": "overheating/L2-oven \u00b7 4 steps \u00b7 11.3s",
+  "sec": 101.5
+ },
+ {
+  "run": 1,
+  "step": "4  safety \u00b7 refuse + tier B/C gates",
+  "ok": true,
+  "detail": "drop_table refused=True \u00b7 tier B needs 'yes' \u00b7 tier C needs 'public.events'",
+  "sec": 0.5
+ },
+ {
+  "run": 2,
+  "step": "1a lab \u00b7 skills finds idle-in-tx",
+  "ok": true,
+  "detail": "idle_in_transaction \u00b7 5 steps \u00b7 56.4s",
+  "sec": 65.3
+ },
+ {
+  "run": 2,
+  "step": "1b lab \u00b7 baseline (for contrast)",
+  "ok": true,
+  "detail": "lock_contention \u00b7 12 steps \u00b7 18.2s",
+  "sec": 18.3
+ },
+ {
+  "run": 2,
+  "step": "2  workload \u00b7 replay after recovery",
+  "ok": true,
+  "detail": "idle_in_tx_samples=84 \u00b7 holder in history=True",
+  "sec": 60.6
+ },
+ {
+  "run": 2,
+  "step": "3  plant \u00b7 overheating on L2-oven",
+  "ok": true,
+  "detail": "overheating/L2-oven \u00b7 12 steps \u00b7 32.8s",
+  "sec": 123.2
+ },
+ {
+  "run": 2,
+  "step": "4  safety \u00b7 refuse + tier B/C gates",
+  "ok": true,
+  "detail": "drop_table refused=True \u00b7 tier B needs 'yes' \u00b7 tier C needs 'public.events'",
+  "sec": 0.6
+ },
+ {
+  "run": 3,
+  "step": "1a lab \u00b7 skills finds idle-in-tx",
+  "ok": true,
+  "detail": "idle_in_transaction \u00b7 6 steps \u00b7 14.7s",
+  "sec": 23.6
+ },
+ {
+  "run": 3,
+  "step": "1b lab \u00b7 baseline (for contrast)",
+  "ok": true,
+  "detail": "lock_contention \u00b7 12 steps \u00b7 15.7s",
+  "sec": 15.8
+ },
+ {
+  "run": 3,
+  "step": "2  workload \u00b7 replay after recovery",
+  "ok": true,
+  "detail": "idle_in_tx_samples=39 \u00b7 holder in history=True",
+  "sec": 60.5
+ },
+ {
+  "run": 3,
+  "step": "3  plant \u00b7 overheating on L2-oven",
+  "ok": true,
+  "detail": "overheating/L2-oven \u00b7 7 steps \u00b7 16.8s",
+  "sec": 107.1
+ },
+ {
+  "run": 3,
+  "step": "4  safety \u00b7 refuse + tier B/C gates",
+  "ok": true,
+  "detail": "drop_table refused=True \u00b7 tier B needs 'yes' \u00b7 tier C needs 'public.events'",
+  "sec": 0.6
+ }
+]

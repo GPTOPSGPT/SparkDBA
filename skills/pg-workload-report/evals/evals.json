@@ -1,0 +1,42 @@
+{
+  "skill": "pg-workload-report",
+  "version": "0.1.0",
+  "task_source": "evals/tasks.json v2",
+  "runner": "python -m evals.run",
+  "tasks": [
+    {
+      "id": "P-past-idletx",
+      "prompt": "About 2 minutes ago users saw requests time out for roughly a minute; it has cleared since. Find what caused it. Do not change anything.",
+      "scenario": "idle_in_transaction",
+      "should_trigger": true
+    },
+    {
+      "id": "P-past-lock",
+      "prompt": "About 2 minutes ago users saw requests time out for roughly a minute; it has cleared since. Find what caused it. Do not change anything.",
+      "scenario": "lock_contention",
+      "should_trigger": true
+    },
+    {
+      "id": "T-health",
+      "prompt": "Run a health check of database lab for the last 10 minutes.",
+      "should_trigger": true
+    },
+    {
+      "id": "P-lock",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "lock_contention",
+      "should_trigger": false,
+      "note": "live incident: evidence snapshot first"
+    },
+    {
+      "id": "N-offtopic",
+      "prompt": "Write a two-line poem about GPUs.",
+      "should_trigger": false
+    },
+    {
+      "id": "N-schema",
+      "prompt": "Design a table schema for a blog with posts and comments.",
+      "should_trigger": false
+    }
+  ]
+}

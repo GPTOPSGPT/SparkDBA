@@ -1,0 +1,27 @@
+:root {
+  --bg: #101114;
+  --bg-elev: #17181c;
+  --bg-card: #1d1e23;
+  --border: #2c2d33;
+  --text: #e9eaee;
+  --text-dim: #8a8f98;
+  --accent: #76b900;   /* NVIDIA green */
+  --accent-2: #ff6b9d; /* pink */
+  --accent-3: #6ee7ff; /* cyan */
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --err: #f87171;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, pre { font-family: var(--mono); }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

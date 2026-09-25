@@ -1,0 +1,60 @@
+{
+  "skill": "pg-root-cause",
+  "version": "0.1.0",
+  "task_source": "evals/tasks.json v2",
+  "runner": "python -m evals.run",
+  "tasks": [
+    {
+      "id": "P-lock",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "lock_contention",
+      "expect": "lock_contention",
+      "should_trigger": true
+    },
+    {
+      "id": "P-idletx",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "idle_in_transaction",
+      "expect": "idle_in_transaction",
+      "should_trigger": true
+    },
+    {
+      "id": "P-bloat",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "table_bloat",
+      "expect": "table_bloat",
+      "should_trigger": true
+    },
+    {
+      "id": "P-storm",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "connection_storm",
+      "expect": "connection_storm",
+      "should_trigger": true
+    },
+    {
+      "id": "P-index",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "missing_index",
+      "expect": "missing_index",
+      "should_trigger": true
+    },
+    {
+      "id": "P-healthy",
+      "prompt": "Users report the shop API is slow and some requests time out. Diagnose database lab. Do not change anything.",
+      "scenario": "healthy",
+      "expect": "healthy",
+      "should_trigger": true
+    },
+    {
+      "id": "N-offtopic",
+      "prompt": "Write a two-line poem about GPUs.",
+      "should_trigger": false
+    },
+    {
+      "id": "N-schema",
+      "prompt": "Design a table schema for a blog with posts and comments.",
+      "should_trigger": false
+    }
+  ]
+}
