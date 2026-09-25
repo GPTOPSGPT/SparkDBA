@@ -129,3 +129,14 @@ h1 { font-size: 40px; margin: 8px 0 12px; line-height: 1.15; }
 .pipe span { padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
 .pipe i { color: var(--text-dim); font-style: normal; }
 h2.sec { font-size: 20px; margin: 32px 0 12px; }
+
+/* top-bar readings with tooltips */
+.topbar-stat { gap: 18px; }
+.stat-item { position: relative; display: inline-flex; align-items: baseline; gap: 6px; cursor: help; outline-offset: 4px; }
+.stat-item + .stat-item::before { content: "·"; color: var(--border); margin-right: 12px; }
+.stat-label { font-size: 12px; color: var(--text-dim); }
+.stat-item .counter { font-size: 18px; font-weight: 600; color: var(--text); }
+.stat-tip { display: none; position: absolute; top: calc(100% + 12px); right: 0; width: 300px; z-index: 30; padding: 10px 12px;
+  background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px;
+  line-height: 1.55; font-weight: 400; white-space: normal; text-align: left; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
+.stat-item:hover .stat-tip, .stat-item:focus-visible .stat-tip { display: block; }

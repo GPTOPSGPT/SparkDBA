@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
 import { usePoll, type Bench, type Health } from './api'
 import { setLang, useLang, useT } from './i18n'
 import Lab from './pages/Lab'
@@ -39,11 +39,22 @@ export default function App() {
       <header className="topbar">
         <a href="#" className="logo"><img src="./favicon.svg" alt="" width="24" height="24" />SparkDBA</a>
         <div className="topbar-stat">
-          <span>{h?.gpu?.name ?? 'DGX Spark'}</span>
-          <span className="counter">{h?.gpu?.util ?? '–'}% GPU</span>
-          <span className="counter">{h?.llm?.decode_tok_s ?? '–'} tok/s</span>
-          <span className="counter">{h?.gpu?.mem_used_gb ?? '–'}/{h?.gpu?.mem_total_gb ?? '–'} GB</span>
-          <span className={h?.model ? 'up' : 'down'}>● {h?.model ? 'nemotron' : t('模型离线', 'model offline')}</span>
+          <Stat tip={t('DGX Spark 里的芯片：NVIDIA GB10（Grace Blackwell），CPU 与 GPU 在同一颗芯片上。',
+            'The chip in the DGX Spark: NVIDIA GB10 (Grace Blackwell), CPU and GPU on one package.')}>
+            {h?.gpu?.name ?? 'DGX Spark'}</Stat>
+          <Stat label="GPU" tip={t('GPU 当前利用率（来自 nvidia-smi）。空闲时是 0%，诊断运行时会升到约 96%。',
+            'GPU utilization right now (from nvidia-smi). 0% when idle; about 96% while a diagnosis runs.')}>
+            <b className="counter">{h?.gpu?.util ?? '–'}%</b></Stat>
+          <Stat label={t('速度', 'Speed')} tip={t('模型写答案的速度：自模型服务启动以来，平均每个请求每秒生成的 token 数（来自 vLLM 自带指标）。',
+            'How fast the model writes its answers: average tokens generated per second per request since the model server started (from vLLM\'s own metrics).')}>
+            <b className="counter">{h?.llm?.decode_tok_s != null ? Math.round(h.llm.decode_tok_s) : '–'}</b> tok/s</Stat>
+          <Stat label={t('内存', 'Mem')} tip={t('已用 / 总内存。GB10 的 CPU 和 GPU 共用一块统一内存，所以这里算的是全部占用。大部分是模型服务固定预留的 60%（约 73 GB：模型权重约 21 GB，其余是长对话缓存），模型空闲时也不释放；其余是 PostgreSQL、TDengine、应用与系统。',
+            'Used / total memory. The GB10\'s CPU and GPU share one unified pool, so this counts everything. Most of it is the 60% the model server reserves (about 73 GB: ~21 GB of model weights, the rest cache for long conversations), held even when the model is idle; the rest is PostgreSQL, TDengine, the app and the OS.')}>
+            <b className="counter">{h?.gpu?.mem_used_gb ?? '–'}/{h?.gpu?.mem_total_gb ?? '–'}</b> GB</Stat>
+          <Stat tip={h?.model
+            ? t('模型服务在线：NVIDIA Nemotron-3.5-Lightning 30B-A3B（NVFP4 量化），由本机 vLLM 提供，不连外网。', 'Model server online: NVIDIA Nemotron-3.5-Lightning 30B-A3B (NVFP4), served by vLLM on this machine, no internet needed.')
+            : t('模型服务没有响应：诊断暂时不可用。', 'The model server is not responding; diagnoses are unavailable for now.')}>
+            <span className={h?.model ? 'up' : 'down'}>● {h?.model ? 'nemotron' : t('模型离线', 'model offline')}</span></Stat>
           <button className="btn-ghost lang" onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}>{lang === 'en' ? '中文' : 'EN'}</button>
         </div>
       </header>
@@ -60,6 +71,17 @@ export default function App() {
           : hash === 'safety' ? <SafetyPage /> : hash === 'runs' ? <RunsPage /> : <Home h={h} />}
       </main>
     </div>
+  )
+}
+
+/** A top-bar reading with an instant tooltip (hover or keyboard focus); the tip is also its accessible description. */
+function Stat({ label, tip, children }: { label?: string; tip: string; children: ReactNode }) {
+  const id = useId()
+  return (
+    <span className="stat-item" tabIndex={0} aria-describedby={id}>
+      {label && <span className="stat-label">{label}</span>}{children}
+      <span role="tooltip" id={id} className="stat-tip">{tip}</span>
+    </span>
   )
 }
 
