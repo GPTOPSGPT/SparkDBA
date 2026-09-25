@@ -11,14 +11,16 @@ export default function Lab() {
   const scen = usePoll<Scenario[]>('scenarios')
   const st = usePoll<ChaosStatus>('chaos/status', 2000)
   const [pick, setPick] = useState('idle_in_transaction')
-  const [skills, setSkills] = useState<AgentEvent[]>([])
-  const [base, setBase] = useState<AgentEvent[]>([])
-  const [running, setRunning] = useState<'' | 'skills' | 'baseline'>('')
+  // Traces are kept per fault, so clicking a card shows that fault's last side-by-side run.
+  const [runs, setRuns] = useState<Record<string, { skills: AgentEvent[]; baseline: AgentEvent[]; expect: string | null }>>({})
+  const [running, setRunning] = useState<Record<string, string>>({})   // mode -> fault it is diagnosing
   const [msg, setMsg] = useState('')
   const [harness, setHarness] = useState<Harness>('builtin')
 
   const active = st?.active && !st.done ? st.active : null
-  const expect = active
+  const busy = Object.keys(running).length > 0
+  const view = runs[pick]
+  const pickName = (s => s ? (en ? s.en : s.name) : pick)(scen?.find(s => s.id === pick))
 
   async function inject() {
     setMsg('')
@@ -27,14 +29,17 @@ export default function Lab() {
   }
 
   async function run(mode: 'skills' | 'baseline') {
-    const set = mode === 'skills' ? setSkills : setBase
-    set([]); setRunning(mode)
+    const key = active ?? pick                 // file the run under the fault that is live now
+    const put = (ev: AgentEvent[]) => setRuns(r => ({
+      ...r, [key]: { ...(r[key] ?? { skills: [], baseline: [] }), expect: active, [mode]: ev } }))
+    setPick(key); put([]); setRunning(r => ({ ...r, [mode]: key }))
     const acc: AgentEvent[] = []
-    await diagnose({ mode, harness: mode === 'skills' ? harness : 'builtin' }, e => { acc.push(e); set([...acc]) })
-    setRunning('')
+    await diagnose({ mode, harness: mode === 'skills' ? harness : 'builtin' }, e => { acc.push(e); put([...acc]) })
+    setRunning(({ [mode]: _, ...r }) => r)
   }
 
-  async function both() { await run('skills'); await run('baseline') }
+  // Concurrent: both see the same fault at the same moment; the server allows two runs and vLLM batches them.
+  function both() { run('skills'); run('baseline') }
 
   return (
     <article>
@@ -51,31 +56,34 @@ export default function Lab() {
               <h3>{en ? s.en : s.name}</h3>
               {active === s.id && <span className="tag p">{t('注入中', 'live')}</span>}
             </div>
-            <p>{s.desc}</p>
+            <p>{en ? s.desc : s.desc_zh ?? s.desc}</p>
             <span className="tag">{s.id}</span>
           </button>
         ))}
       </section>
 
       <div className="toolbar">
-        <button className="btn primary" onClick={inject} disabled={!!active}>{t('注入故障', 'Inject fault')}</button>
+        <button className="btn primary" onClick={inject} disabled={!!active}>{t(`注入「${pickName}」`, `Inject “${pickName}”`)}</button>
         <button className="btn danger" onClick={() => post('chaos/stop', {})} disabled={!active}>{t('停止', 'Stop')}</button>
         <span className="dim">{active
           ? <>{t('正在注入', 'Injecting')} <b>{active}</b> · {st?.elapsed}s · {st?.ready ? t('已就绪，可以诊断', 'ready to diagnose') : t('预热中…', 'warming up…')}</>
-          : t('当前无故障注入', 'No fault active')}</span>
+          : t('当前无故障注入：选一张卡片，再点注入', 'No fault active: pick a card, then inject')}</span>
         {msg && <span className="down">{msg}</span>}
       </div>
 
       <HarnessPicker value={harness} onChange={setHarness} />
       <div className="toolbar">
-        <button className="btn active" onClick={() => run('skills')} disabled={!!running}>{t('诊断 · 有技能', 'Diagnose · with skills')}</button>
-        <button className="btn" onClick={() => run('baseline')} disabled={!!running}>{t('诊断 · 无技能基线', 'Diagnose · baseline')}</button>
-        <button className="btn primary" onClick={both} disabled={!!running}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
+        <button className="btn active" onClick={() => run('skills')} disabled={!!running.skills}>{t('诊断 · 有技能', 'Diagnose · with skills')}</button>
+        <button className="btn" onClick={() => run('baseline')} disabled={!!running.baseline}>{t('诊断 · 无技能基线', 'Diagnose · baseline')}</button>
+        <button className="btn primary" onClick={both} disabled={busy}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
       </div>
 
+      <p className="dim">{t(`下方为「${pickName}」的诊断`, `Diagnoses below are for “${pickName}”`)}
+        {view && !busy && view.expect !== pick && ' · ' + t('上次运行时该故障未注入', 'this fault was not live when it last ran')}</p>
       <div className="cols-2" style={{ gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)' }}>
-        <Trace title={harness === 'builtin' ? t('有技能', 'With skills') : `${t('有技能', 'With skills')} · ${harness}`} tone="g" events={skills} running={running === 'skills'} expect={expect} />
-        <Trace title={t('无技能基线', 'Baseline')} tone="p" events={base} running={running === 'baseline'} expect={expect} />
+        <Trace title={harness === 'builtin' ? t('有技能', 'With skills') : `${t('有技能', 'With skills')} · ${harness}`} tone="g"
+          events={view?.skills ?? []} running={running.skills === pick} expect={view?.expect} />
+        <Trace title={t('无技能基线', 'Baseline')} tone="p" events={view?.baseline ?? []} running={running.baseline === pick} expect={view?.expect} />
       </div>
 
       {st?.log && st.log.length > 0 && (

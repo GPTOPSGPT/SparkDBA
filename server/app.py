@@ -16,7 +16,8 @@ app = FastAPI(title="SparkDBA")
 WEB = config.ROOT / "web" / "dist"
 RUNS = config.DATA / "runs.jsonl"
 BENCH = config.ROOT / "evals" / "results" / "summary.json"
-_gpu_lock = threading.Lock()     # one agent run at a time: the model is the shared resource
+# Two agent runs at once, so 'with skills' and 'baseline' see the same fault at the same moment; vLLM batches them.
+_gpu_slots = threading.BoundedSemaphore(2)
 
 TASK = ("Users report the shop API is slow and some requests time out. "
         "Diagnose database lab. Do not change anything.")
@@ -73,7 +74,7 @@ def health():
     m = llm.models()
     return {"model": (m or {}).get("data", [{}])[0].get("id") if m else None,
             "model_path": "Nemotron-3.5-Lightning-30B-A3B-NVFP4", "gpu": _gpu(), "llm": _decode_tps(),
-            "chaos": chaos.status(), "busy": _gpu_lock.locked()}
+            "chaos": chaos.status(), "busy": _gpu_slots._value == 0}
 
 
 @app.get("/api/scenarios")
@@ -120,8 +121,8 @@ async def diagnose(req: Request):
     q: queue.Queue = queue.Queue()
 
     def work():
-        if not _gpu_lock.acquire(blocking=False):
-            q.put({"type": "error", "text": "another diagnosis is running"}); q.put(None); return
+        if not _gpu_slots.acquire(blocking=False):
+            q.put({"type": "error", "text": "two diagnoses are already running"}); q.put(None); return
         try:
             if domain == "td":
                 scen = plant.status().get("active")
@@ -144,7 +145,7 @@ async def diagnose(req: Request):
         except Exception as e:
             q.put({"type": "error", "text": f"{e.__class__.__name__}: {e}"})
         finally:
-            _gpu_lock.release()
+            _gpu_slots.release()
             q.put(None)
 
     threading.Thread(target=work, daemon=True).start()

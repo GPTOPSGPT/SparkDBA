@@ -48,7 +48,7 @@ export default function Plant() {
   const [harness, setHarness] = useState<Harness>('builtin')
   const [skills, setSkills] = useState<AgentEvent[]>([])
   const [base, setBase] = useState<AgentEvent[]>([])
-  const [running, setRunning] = useState('')
+  const [running, setRunning] = useState({ skills: false, baseline: false })
   const [msg, setMsg] = useState('')
 
   const active = st?.active ?? null
@@ -56,10 +56,10 @@ export default function Plant() {
 
   async function run(mode: 'skills' | 'baseline') {
     const set = mode === 'skills' ? setSkills : setBase
-    set([]); setRunning(mode)
+    set([]); setRunning(r => ({ ...r, [mode]: true }))
     const acc: AgentEvent[] = []
     await diagnose({ mode, domain: 'td', harness: mode === 'skills' ? harness : 'builtin' }, e => { acc.push(e); set([...acc]) })
-    setRunning('')
+    setRunning(r => ({ ...r, [mode]: false }))
   }
 
   const yieldRows = series?.yield?.rows ?? []
@@ -131,14 +131,14 @@ export default function Plant() {
       <h2 className="sec">{t('诊断：是哪台设备，为什么', 'Diagnose: which device, and why')}</h2>
       <HarnessPicker value={harness} onChange={setHarness} />
       <div className="toolbar">
-        <button className="btn active" disabled={!!running} onClick={() => run('skills')}>{t('诊断 · 有技能', 'Diagnose · with skills')}</button>
-        <button className="btn" disabled={!!running} onClick={() => run('baseline')}>{t('诊断 · 无技能基线', 'Diagnose · baseline')}</button>
-        <button className="btn primary" disabled={!!running} onClick={async () => { await run('skills'); await run('baseline') }}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
+        <button className="btn active" disabled={running.skills} onClick={() => run('skills')}>{t('诊断 · 有技能', 'Diagnose · with skills')}</button>
+        <button className="btn" disabled={running.baseline} onClick={() => run('baseline')}>{t('诊断 · 无技能基线', 'Diagnose · baseline')}</button>
+        <button className="btn primary" disabled={running.skills || running.baseline} onClick={() => { run('skills'); run('baseline') }}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
       </div>
       <div className="cols-2" style={{ gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)' }}>
         <Trace title={harness === 'builtin' ? t('有技能', 'With skills') : `${t('有技能', 'With skills')} · ${harness}`} tone="g" events={skills}
-          running={running === 'skills'} expect={active ? active : null} expectDevice={active ? expectDev : undefined} />
-        <Trace title={t('无技能基线', 'Baseline')} tone="p" events={base} running={running === 'baseline'}
+          running={running.skills} expect={active ? active : null} expectDevice={active ? expectDev : undefined} />
+        <Trace title={t('无技能基线', 'Baseline')} tone="p" events={base} running={running.baseline}
           expect={active ? active : null} expectDevice={active ? expectDev : undefined} />
       </div>
 

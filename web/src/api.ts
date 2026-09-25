@@ -58,7 +58,7 @@ export async function diagnose(body: Record<string, unknown>, onEvent: (e: Agent
   }
 }
 
-export type Scenario = { id: string; name: string; en: string; desc: string; params: Record<string, number | string>; warmup: number }
+export type Scenario = { id: string; name: string; en: string; desc: string; desc_zh?: string; params: Record<string, number | string>; warmup: number }
 export type ChaosStatus = { active: string | null; params?: Record<string, number>; done?: boolean; ready?: boolean; elapsed?: number; log?: string[] }
 export type Health = {
   model: string | null; model_path: string; busy: boolean; chaos: ChaosStatus
