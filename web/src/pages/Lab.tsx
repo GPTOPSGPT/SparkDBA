@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { diagnose, post, usePoll, type AgentEvent, type ChaosStatus, type Scenario } from '../api'
+import { diagnose, get, post, usePoll, type AgentEvent, type ChaosStatus, type Scenario } from '../api'
 import { Trace } from '../components/Trace'
 import { HarnessPicker, type Harness } from './Plant'
 import { Note } from '../components/ui'
@@ -15,6 +15,7 @@ export default function Lab() {
   const [runs, setRuns] = useState<Record<string, { skills: AgentEvent[]; baseline: AgentEvent[]; expect: string | null }>>({})
   const [running, setRunning] = useState<Record<string, string>>({})   // mode -> fault it is diagnosing
   const [msg, setMsg] = useState('')
+  const [arming, setArming] = useState(false)
   const [harness, setHarness] = useState<Harness>('builtin')
 
   const active = st?.active && !st.done ? st.active : null
@@ -26,12 +27,29 @@ export default function Lab() {
     setMsg('')
     const r = await post<{ ok: boolean; error?: string }>('chaos/start', { id: pick, params: { duration: 300 } })
     if (!r.ok) setMsg(r.error ?? 'failed')
+    return r.ok
   }
 
-  async function run(mode: 'skills' | 'baseline') {
-    const key = active ?? pick                 // file the run under the fault that is live now
+  // One click for the demo: inject, wait until the fault has warmed up, then run both side by side.
+  async function injectAndRun() {
+    setArming(true)
+    try {
+      if (!await inject()) return
+      const end = Date.now() + 120_000
+      let s = await get<ChaosStatus>('chaos/status')
+      while (!s.ready && !s.done && Date.now() < end) {
+        await new Promise(r => setTimeout(r, 1000))
+        s = await get<ChaosStatus>('chaos/status')
+      }
+      if (!s.ready || s.done) { setMsg(t('故障未就绪，未启动诊断', 'Fault never became ready; no diagnosis started')); return }
+      both(pick)
+    } finally { setArming(false) }
+  }
+
+  async function run(mode: 'skills' | 'baseline', live: string | null = active) {
+    const key = live ?? pick                   // file the run under the fault that is live now
     const put = (ev: AgentEvent[]) => setRuns(r => ({
-      ...r, [key]: { ...(r[key] ?? { skills: [], baseline: [] }), expect: active, [mode]: ev } }))
+      ...r, [key]: { ...(r[key] ?? { skills: [], baseline: [] }), expect: live, [mode]: ev } }))
     setPick(key); put([]); setRunning(r => ({ ...r, [mode]: key }))
     const acc: AgentEvent[] = []
     await diagnose({ mode, harness: mode === 'skills' ? harness : 'builtin' }, e => { acc.push(e); put([...acc]) })
@@ -39,7 +57,7 @@ export default function Lab() {
   }
 
   // Concurrent: both see the same fault at the same moment; the server allows two runs and vLLM batches them.
-  function both() { run('skills'); run('baseline') }
+  function both(live: string | null = active) { run('skills', live); run('baseline', live) }
 
   return (
     <article>
@@ -63,7 +81,8 @@ export default function Lab() {
       </section>
 
       <div className="toolbar">
-        <button className="btn primary" onClick={inject} disabled={!!active}>{t(`注入「${pickName}」`, `Inject “${pickName}”`)}</button>
+        <button className="btn primary" onClick={inject} disabled={!!active || arming}>{t(`注入「${pickName}」`, `Inject “${pickName}”`)}</button>
+        <button className="btn active" onClick={injectAndRun} disabled={!!active || arming || busy}>{t('注入并诊断（并排）', 'Inject and diagnose (side by side)')}</button>
         <button className="btn danger" onClick={() => post('chaos/stop', {})} disabled={!active}>{t('停止', 'Stop')}</button>
         <span className="dim">{active
           ? <>{t('正在注入', 'Injecting')} <b>{active}</b> · {st?.elapsed}s · {st?.ready ? t('已就绪，可以诊断', 'ready to diagnose') : t('预热中…', 'warming up…')}</>
@@ -75,7 +94,7 @@ export default function Lab() {
       <div className="toolbar">
         <button className="btn active" onClick={() => run('skills')} disabled={!!running.skills}>{t('诊断 · 有技能', 'Diagnose · with skills')}</button>
         <button className="btn" onClick={() => run('baseline')} disabled={!!running.baseline}>{t('诊断 · 无技能基线', 'Diagnose · baseline')}</button>
-        <button className="btn primary" onClick={both} disabled={busy}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
+        <button className="btn primary" onClick={() => both()} disabled={busy || arming}>{t('两个都跑，并排对比', 'Run both, side by side')}</button>
       </div>
 
       <p className="dim">{t(`下方为「${pickName}」的诊断`, `Diagnoses below are for “${pickName}”`)}
