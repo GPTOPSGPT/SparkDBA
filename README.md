@@ -78,15 +78,17 @@ Prerequisites: DGX OS / Ubuntu 24.04, PostgreSQL 16, Python 3.12, Node 24, a Pyt
    ```
 
 5. **Model**: `bash deploy/restart.sh vllm` (1x DGX Spark recipe from the model card, localhost:8000).
-6. **Services**: `bash deploy/restart.sh sampler` and `bash deploy/restart.sh app` (port `SPARKDBA_PORT`, default 9000).
+6. **HTTPS (optional)**: set `PUBLIC_IP` in `.env` and run `bash deploy/make-tls.sh` for a self-signed certificate (or put a
+   trusted `cert.pem`/`key.pem` in `$SPARKDBA_HOME/tls`); `deploy/app.sh` then serves HTTPS on the same port.
+7. **Services**: `bash deploy/restart.sh sampler` and `bash deploy/restart.sh app` (port `SPARKDBA_PORT`, default 9000).
    A second install on the same host: set `SPARKDBA_UNIT=<name>` so its units don't replace the first one's.
-7. **Check**: `bash deploy/check.sh` seeds the lab and injects all six PostgreSQL faults, printing PASS per scenario; then open
+8. **Check**: `bash deploy/check.sh` seeds the lab and injects all six PostgreSQL faults, printing PASS per scenario; then open
    `http://<spark>:9000/?token=<SPARKDBA_TOKEN>`.
-8. **Plant module (optional)**: install TDengine, change its default root password, then
+9. **Plant module (optional)**: install TDengine, change its default root password, then
    `bash deploy/setup-tdengine.sh`, `bash deploy/restart.sh plant`, `bash deploy/restart.sh monitor`.
-9. **Demo films (optional)**: put `sparkdba-demo-zh.mp4`, `sparkdba-demo-en.mp4`, `poster-zh.jpg`, `poster-en.jpg` in `$SPARKDBA_HOME/media`
+10. **Demo films (optional)**: put `sparkdba-demo-zh.mp4`, `sparkdba-demo-en.mp4`, `poster-zh.jpg`, `poster-en.jpg` in `$SPARKDBA_HOME/media`
    (kept out of git; build them with `media/tools/build.mjs`). The home page plays the one matching the UI language.
-10. **Harnesses (optional)**: `bash deploy/install-openclaw-skills.sh` (then `bash deploy/restart.sh openclaw`) and
+11. **Harnesses (optional)**: `bash deploy/install-openclaw-skills.sh` (then `bash deploy/restart.sh openclaw`) and
    `bash deploy/install-hermes.sh`.
 
 Mirrors that work from mainland China: PyPI `mirrors.aliyun.com`, npm `registry.npmmirror.com`, Node binaries

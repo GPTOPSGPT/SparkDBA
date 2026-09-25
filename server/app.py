@@ -31,7 +31,8 @@ async def auth(request: Request, call_next):
     tok = request.query_params.get("token")
     if tok == config.TOKEN:
         resp = RedirectResponse(request.url.path)
-        resp.set_cookie("sdb", tok, httponly=True, samesite="lax", max_age=14 * 86400)
+        resp.set_cookie("sdb", tok, httponly=True, samesite="lax", max_age=14 * 86400,
+                        secure=request.url.scheme == "https")
         return resp
     if request.cookies.get("sdb") == config.TOKEN or request.headers.get("x-token") == config.TOKEN:
         return await call_next(request)
