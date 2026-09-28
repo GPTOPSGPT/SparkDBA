@@ -20,6 +20,8 @@ Each skill is a directory with `SKILL.md` (triggers, negative triggers, output c
 
 Per-agent design (perception / planning & reasoning / tools / memory): [docs/AGENTS.md](docs/AGENTS.md).
 
+Project report (zh/en): [docs/REPORT.md](docs/REPORT.md). Pitch decks: [zh](docs/deck/SparkDBA-pitch-zh.pdf) · [en](docs/deck/SparkDBA-pitch-en.pdf).
+
 ## How it is evaluated
 
 Same model, same task text, same base tools (`run_sql` read-only, `request_change` recorded but never executed); the only difference is whether skills are loaded. Ground truth is the fault the lab injected. Sessions use neutral application names, so the answer cannot be read off a name.
