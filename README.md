@@ -20,7 +20,7 @@ Each skill is a directory with `SKILL.md` (triggers, negative triggers, output c
 
 Per-agent design (perception / planning & reasoning / tools / memory): [docs/AGENTS.md](docs/AGENTS.md).
 
-Project report (zh/en): [docs/REPORT.md](docs/REPORT.md). Pitch decks: [zh](docs/deck/SparkDBA-pitch-zh.pdf) · [en](docs/deck/SparkDBA-pitch-en.pdf).
+Project report (zh/en): [docs/REPORT.md](docs/REPORT.md). Pitch decks: [zh](docs/deck/SparkDBA-pitch-zh.pdf) · [en](docs/deck/SparkDBA-pitch-en.pdf). Competition essay (zh): [docs/ESSAY.md](docs/ESSAY.md). Demo films: [release v1.0-hackathon](https://github.com/GPTOPSGPT/SparkDBA/releases/tag/v1.0-hackathon).
 
 ## How it is evaluated
 
