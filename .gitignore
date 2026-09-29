@@ -30,3 +30,4 @@ submission/
 docs/token.txt
 *.swp
 docs/github.txt
+deploy/mac/dgx-page/out/
