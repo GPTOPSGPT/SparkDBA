@@ -9,7 +9,7 @@ The business logic is ported from our KingbaseES diagnosis agent: the fault inje
 ## 中文说明
 
 > 第三届 NVIDIA DGX Spark Hackathon · 团队 GPTOPS（张成宇、史钱龙、齐冬娜）
-> 完整报告书：[docs/REPORT.md](docs/REPORT.md) · 参赛征文：[docs/ESSAY.md](docs/ESSAY.md) · 演示视频：[release v1.0-hackathon](https://github.com/GPTOPSGPT/SparkDBA/releases/tag/v1.0-hackathon)
+> 完整报告书：[docs/REPORT.md](docs/REPORT.md) · 参赛征文：[docs/ESSAY.md](docs/ESSAY.md) · 演示视频：[B 站](https://www.bilibili.com/video/BV1gMaH6FEYR/) · [release v1.0-hackathon](https://github.com/GPTOPSGPT/SparkDBA/releases/tag/v1.0-hackathon)
 
 ### 作品特点与核心亮点
 
@@ -73,7 +73,7 @@ Each skill is a directory with `SKILL.md` (triggers, negative triggers, output c
 
 Per-agent design (perception / planning & reasoning / tools / memory): [docs/AGENTS.md](docs/AGENTS.md).
 
-Project report (zh/en): [docs/REPORT.md](docs/REPORT.md). Pitch decks: [zh](docs/deck/SparkDBA-pitch-zh.pdf) · [en](docs/deck/SparkDBA-pitch-en.pdf). Competition essay (zh): [docs/ESSAY.md](docs/ESSAY.md). Demo films: [release v1.0-hackathon](https://github.com/GPTOPSGPT/SparkDBA/releases/tag/v1.0-hackathon).
+Project report (zh/en): [docs/REPORT.md](docs/REPORT.md). Pitch decks: [zh](docs/deck/SparkDBA-pitch-zh.pdf) · [en](docs/deck/SparkDBA-pitch-en.pdf). Competition essay (zh): [docs/ESSAY.md](docs/ESSAY.md). Demo film: [Bilibili](https://www.bilibili.com/video/BV1gMaH6FEYR/) · [release v1.0-hackathon](https://github.com/GPTOPSGPT/SparkDBA/releases/tag/v1.0-hackathon).
 
 ## How it is evaluated
 
